@@ -142,6 +142,35 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var
 .act-txt .at{font-size:.87rem;font-weight:700;}
 .act-txt .as{font-size:.72rem;color:var(--sub);margin-top:2px;}
 .act-r{margin-left:auto;text-align:right;flex-shrink:0;}
+
+/* CHAT IA */
+#s-chat{background:#eef2f7;}
+.chat-chips{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #eaeaf0;scrollbar-width:none;}
+.chat-chips::-webkit-scrollbar{display:none;}
+.chip{background:#e3f2fd;color:var(--az);border:none;border-radius:20px;padding:7px 15px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.chip:hover{background:#bbdefb;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:100px;}
+.msg{max-width:84%;}
+.msg.bot{align-self:flex-start;}
+.msg.user{align-self:flex-end;}
+.msg-row{display:flex;align-items:flex-end;gap:8px;}
+.bot-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--az3),var(--az));display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:#fff;flex-shrink:0;}
+.bubble{background:#fff;border-radius:18px 18px 18px 4px;padding:12px 15px;font-size:.875rem;line-height:1.55;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.msg.user .bubble{background:linear-gradient(135deg,var(--az3),var(--az));color:#fff;border-radius:18px 18px 4px 18px;}
+.msg-t{font-size:.65rem;color:var(--sub);margin-top:4px;padding-left:4px;}
+.msg.user .msg-t{text-align:right;}
+.typing{display:flex;gap:5px;align-items:center;padding:14px 15px;}
+.typing span{width:8px;height:8px;border-radius:50%;background:var(--sub);animation:bonce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bonce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-7px);}}
+.chat-bar{padding:12px 14px;background:#fff;border-top:1px solid #eaeaf0;display:flex;align-items:center;gap:8px;position:sticky;bottom:0;}
+.chat-in{flex:1;border:2px solid #e8e8f0;border-radius:24px;padding:11px 18px;font-size:.9rem;outline:none;font-family:inherit;transition:border .2s;}
+.chat-in:focus{border-color:var(--az2);}
+.chat-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:transform .15s;}
+.chat-btn:hover{transform:scale(1.08);}
+.mic-btn{background:#e3f2fd;color:var(--az);}
+.send-btn{background:linear-gradient(135deg,var(--az),var(--az2));color:#fff;}
 .act-time{font-size:.65rem;color:#ccc;}
 .act-val{font-size:.75rem;font-weight:800;color:var(--az);margin-top:2px;}
 
@@ -266,6 +295,8 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
   <button class="sb-item" onclick="go('agenda')"><span class="sb-i">📅</span> Agenda & Reservas</button>
   <button class="sb-item" onclick="go('informes')"><span class="sb-i">📊</span> Informes</button>
   <button class="sb-item" onclick="go('gestion')"><span class="sb-i">💰</span> Gestión & Cobros</button>
+  <div class="sb-sec">Asistente</div>
+  <button class="sb-item" onclick="go('chat')"><span class="sb-i">🤖</span> IA Asistente</button>
 </div>
 
 <div id="content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
@@ -370,7 +401,7 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
         <button class="qa" onclick="go('contratos')"><div class="qa-i">📋</div><div class="qa-l">Contratos</div></button>
         <button class="qa" onclick="go('gestion')"><div class="qa-i">💰</div><div class="qa-l">Cobros</div></button>
         <button class="qa" onclick="go('informes')"><div class="qa-i">📊</div><div class="qa-l">Informes</div></button>
-        <button class="qa" onclick="go('flota')" style="border:2px solid var(--az);"><div class="qa-i">🔧</div><div class="qa-l" style="color:var(--az)">Mantenimiento</div></button>
+        <button class="qa" onclick="go('chat')" style="border:2px solid var(--az);"><div class="qa-i">🤖</div><div class="qa-l" style="color:var(--az);font-weight:900;">IA Chat</div></button>
       </div>
     </div>
 
@@ -394,7 +425,7 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
     </div>
 
     <div class="sec"><div class="sec-title">Actividad reciente</div></div>
-    <div style="padding:0 16px 90px;">
+    <div id="actList" style="padding:0 16px 90px;">
       <div class="act-item">
         <div class="act-ic ac-a">📋</div>
         <div class="act-txt"><div class="at">Contrato CONT-004 abierto</div><div class="as">Carlos Garay · Hyundai Tucson · 4 días</div></div>
@@ -420,6 +451,7 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
   <div id="bottomnav">
     <button class="bn act" onclick="go('home')"><span class="bn-i">🏠</span><span class="bn-l">Inicio</span></button>
     <button class="bn" onclick="go('flota')"><span class="bn-i">🚗</span><span class="bn-l">Flota</span></button>
+    <button class="bn" onclick="go('chat')"><span class="bn-i">🤖</span><span class="bn-l">IA Chat</span></button>
     <button class="bn" onclick="go('contratos')"><span class="bn-i">📋</span><span class="bn-l">Contratos</span></button>
     <button class="bn" onclick="go('agenda')"><span class="bn-i">📅</span><span class="bn-l">Agenda</span></button>
   </div>
@@ -692,6 +724,39 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
         <div style="font-size:.72rem;color:var(--sub);margin-top:4px">1 activo + 1 reserva</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ═══ CHAT IA ═══ -->
+<div class="screen" id="s-chat">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">🤖 IA Asistente IsabSoft</span>
+    <span style="font-size:.65rem;font-weight:800;background:#e8f5e9;color:#2e7d32;padding:4px 10px;border-radius:10px;">● Online</span>
+  </div>
+  <div class="chat-chips">
+    <button class="chip" onclick="sc('Cerré contrato con Juan Pérez, Toyota Hilux, 5 días a Gs. 350.000 por día')">📋 Nuevo contrato</button>
+    <button class="chip" onclick="sc('El Tucson fue devuelto sin daños, cliente Carlos Garay')">🔄 Devolución</button>
+    <button class="chip" onclick="sc('Cobré Gs. 1.750.000 de Laura Fernández')">💰 Registrar pago</button>
+    <button class="chip" onclick="sc('El Ranger entró a mantenimiento hoy')">🔧 Mantenimiento</button>
+    <button class="chip" onclick="sc('Reserva para Diana Villalba, Onix, 3 días')">📅 Reserva</button>
+    <button class="chip" onclick="sc('Mostrame resumen de ingresos de mayo')">📊 Resumen</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot">
+      <div class="msg-row">
+        <div class="bot-av">IA</div>
+        <div>
+          <div class="bubble">¡Hola! 👋 Soy tu asistente <strong>IsabSoft IA</strong>.<br><br>Escribime en lenguaje natural cualquier operación y la registro automáticamente.<br><br>Ejemplos:<br>• <em>"Cerré contrato con Juan Pérez, Hilux, 5 días a Gs. 350.000/día"</em><br>• <em>"El Tucson fue devuelto sin daños"</em><br>• <em>"Cobré Gs. 1.750.000 de Carlos Garay"</em><br>• <em>"El Ranger entró a mantenimiento"</em></div>
+          <div class="msg-t">Ahora</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-bar">
+    <button class="chat-btn mic-btn" onclick="simVoz()">🎙️</button>
+    <input class="chat-in" id="chatIn" placeholder="Escribí o dictá un registro..." onkeydown="if(event.key==='Enter')enviar()"/>
+    <button class="chat-btn send-btn" onclick="enviar()">➤</button>
   </div>
 </div>
 
@@ -984,6 +1049,157 @@ function guardarContrato(){
 renderFlota();
 renderClientes();
 renderContratos();
+
+// ─── CHAT IA ─────────────────────────────────
+function parse(txt){
+  const t=txt.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const precios=(txt.match(/\d[\d\.]*/g)||[]).map(p=>parseInt(p.replace(/\./g,''))).filter(p=>p>999);
+  const diasM=t.match(/(\d+)\s*d[ií]a/);const dias=diasM?parseInt(diasM[1]):null;
+  let cliente=null;
+  const cliM=t.match(/(?:cliente|con|de|para)\s+([a-z\s]{3,25?}?)(?:\s*[,\.\-]|\s+(?:hilux|ranger|tucson|onix|l200|toyota|ford|hyundai|chevrolet|mitsubishi|vehiculo|auto|camion|camioneta|por|a\s+gs|\d))/);
+  if(cliM)cliente=cliM[1].trim().replace(/\b\w/g,c=>c.toUpperCase());
+  let vehiculo=null;
+  if(/hilux/.test(t))vehiculo='Toyota Hilux';
+  else if(/ranger/.test(t))vehiculo='Ford Ranger';
+  else if(/tucson/.test(t))vehiculo='Hyundai Tucson';
+  else if(/onix/.test(t))vehiculo='Chevrolet Onix';
+  else if(/l200|l\s200/.test(t))vehiculo='Mitsubishi L200';
+  else if(/corolla/.test(t))vehiculo='Toyota Corolla';
+  let accion=null;
+  if(/contrato|cerr[eé]|alquil[eé]|alquile/.test(t))accion='contrato';
+  else if(/devolu|devuelto|devolvi[oó]|entrego|retorno/.test(t))accion='devolucion';
+  else if(/cobr[eé]|pago|pag[oó]|recibi|ingreso\s+de/.test(t))accion='pago';
+  else if(/mantenimiento|taller|revisi[oó]n|service|reparaci/.test(t))accion='mantenimiento';
+  else if(/reserv[aeé]|reservi/.test(t))accion='reserva';
+  else if(/ingreso|resumen|reporte|cu[aá]nto|informe/.test(t))accion='reporte';
+  return{cliente,vehiculo,dias,precios,accion,raw:txt};
+}
+
+function buildResp(p){
+  const{cliente,vehiculo,dias,precios,accion,raw}=p;
+  const f=new Date().toLocaleDateString('es-PY');
+  const pr=precios[0]||0;const pr2=precios[1]||0;
+  const totalCalc=pr&&dias?pr*dias:(pr2||pr);
+  const cli=cliente||'?';const veh=vehiculo||'?';const d=dias||'?';
+  const btn=(color,bg)=>`flex:1;padding:10px;background:${bg};color:${color};border:none;border-radius:20px;font-weight:800;cursor:pointer;font-size:.82rem;`;
+
+  if(accion==='contrato'){
+    const tot=totalCalc;
+    return{m:`📋 <strong>Contrato detectado</strong> — confirmá para registrar`,
+    c:`<div style="background:#eff6ff;border:2px solid #bfdbfe;border-radius:14px;padding:14px;margin-top:10px;">
+      <div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#1e40af;margin-bottom:10px;">📋 Nuevo contrato de alquiler</div>
+      <div style="font-size:.85rem;margin-bottom:5px;">Cliente: <b>${cli}</b></div>
+      <div style="font-size:.85rem;margin-bottom:5px;">Vehículo: <b>${veh}</b></div>
+      ${d!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Duración: <b>${d} días</b></div>`:''}
+      ${pr?`<div style="font-size:.85rem;margin-bottom:5px;">Precio/día: <b>Gs. ${pr.toLocaleString('es')}</b></div>`:''}
+      ${tot?`<div style="font-size:.85rem;margin-bottom:5px;">Total: <b>Gs. ${tot.toLocaleString('es')}</b></div>`:''}
+      <div style="font-size:.85rem;margin-bottom:5px;">Fecha: <b>${f}</b></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button onclick="confirmar('contrato','${cli}','${veh}',${tot})" style="${btn('#fff','#1565c0')}">✓ Confirmar</button>
+        <button onclick="go('nuevo')" style="${btn('#374151','#e5e7eb')}">✏️ Editar</button>
+      </div></div>`};
+  }
+  if(accion==='devolucion'){
+    return{m:`🔄 <strong>Devolución detectada</strong> — confirmá para registrar`,
+    c:`<div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:14px;padding:14px;margin-top:10px;">
+      <div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#14532d;margin-bottom:10px;">🔄 Devolución de vehículo</div>
+      ${veh!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Vehículo: <b>${veh}</b></div>`:''}
+      ${cli!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Cliente: <b>${cli}</b></div>`:''}
+      <div style="font-size:.85rem;margin-bottom:5px;">Fecha: <b>${f}</b></div>
+      <div style="font-size:.85rem;margin-bottom:5px;">Estado: <b>Sin daños — pendiente inspección</b></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button onclick="confirmar('devolucion','${cli}','${veh}',0)" style="${btn('#fff','#16a34a')}">✓ Confirmar</button>
+        <button onclick="go('contratos')" style="${btn('#374151','#e5e7eb')}">✏️ Ver contratos</button>
+      </div></div>`};
+  }
+  if(accion==='pago'){
+    const monto=pr||pr2;
+    return{m:`💰 <strong>Cobro detectado</strong> — confirmá el pago`,
+    c:`<div style="background:#fff7ed;border:2px solid #fed7aa;border-radius:14px;padding:14px;margin-top:10px;">
+      <div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:10px;">💰 Cobro recibido</div>
+      ${cli!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Cliente: <b>${cli}</b></div>`:''}
+      ${monto?`<div style="font-size:.85rem;margin-bottom:5px;">Monto: <b>Gs. ${monto.toLocaleString('es')}</b></div>`:''}
+      <div style="font-size:.85rem;margin-bottom:5px;">Fecha: <b>${f}</b></div>
+      <div style="font-size:.85rem;margin-bottom:5px;">Estado: <b>Pagado ✓</b></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button onclick="confirmar('pago','${cli}','${veh}',${monto})" style="${btn('#fff','#e65100')}">✓ Confirmar</button>
+        <button onclick="go('gestion')" style="${btn('#374151','#e5e7eb')}">✏️ Ver cobros</button>
+      </div></div>`};
+  }
+  if(accion==='mantenimiento'){
+    return{m:`🔧 <strong>Mantenimiento detectado</strong> — confirmá para registrar`,
+    c:`<div style="background:#fdf4ff;border:2px solid #e9d5ff;border-radius:14px;padding:14px;margin-top:10px;">
+      <div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#6b21a8;margin-bottom:10px;">🔧 Ingreso a mantenimiento</div>
+      ${veh!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Vehículo: <b>${veh}</b></div>`:''}
+      <div style="font-size:.85rem;margin-bottom:5px;">Fecha entrada: <b>${f}</b></div>
+      <div style="font-size:.85rem;margin-bottom:5px;">Estado: <b>En taller</b></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button onclick="confirmar('mantenimiento','','${veh}',0)" style="${btn('#fff','#6a1b9a')}">✓ Confirmar</button>
+        <button onclick="go('flota')" style="${btn('#374151','#e5e7eb')}">✏️ Ver flota</button>
+      </div></div>`};
+  }
+  if(accion==='reserva'){
+    return{m:`📅 <strong>Reserva detectada</strong> — confirmá para registrar`,
+    c:`<div style="background:#f0f9ff;border:2px solid #bae6fd;border-radius:14px;padding:14px;margin-top:10px;">
+      <div style="font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#0c4a6e;margin-bottom:10px;">📅 Nueva reserva</div>
+      ${cli!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Cliente: <b>${cli}</b></div>`:''}
+      ${veh!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Vehículo: <b>${veh}</b></div>`:''}
+      ${d!=='?'?`<div style="font-size:.85rem;margin-bottom:5px;">Duración estimada: <b>${d} días</b></div>`:''}
+      <div style="font-size:.85rem;margin-bottom:5px;">Fecha registro: <b>${f}</b></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button onclick="confirmar('reserva','${cli}','${veh}',0)" style="${btn('#fff','#0369a1')}">✓ Confirmar</button>
+        <button onclick="go('agenda')" style="${btn('#374151','#e5e7eb')}">✏️ Ver agenda</button>
+      </div></div>`};
+  }
+  if(accion==='reporte'){
+    return{m:`📊 <strong>Resumen — Mayo 2026</strong><br><br><b>Flota total:</b> 5 vehículos<br><b>Alquilados ahora:</b> 2<br><b>En mantenimiento:</b> 1<br><b>Ingresos del mes:</b> Gs. 3.600.000<br><b>Contratos activos:</b> 3<br><b>Tasa de ocupación:</b> 60%<br><b>Promedio por contrato:</b> Gs. 720.000<br><br>¿Querés el detalle por vehículo?`,c:null};
+  }
+  return{m:`🤔 Entendí tu mensaje. ¿Es un:<br><br>📋 <em>Contrato</em> — "Cerré contrato con Juan, Hilux, 5 días a Gs. 350.000"<br>🔄 <em>Devolución</em> — "El Tucson fue devuelto sin daños"<br>💰 <em>Cobro</em> — "Cobré Gs. 1.750.000 de María"<br>🔧 <em>Mantenimiento</em> — "El Ranger entró al taller"<br>📅 <em>Reserva</em> — "Reserva para Diana, Onix, 3 días"`,c:null};
+}
+
+function gT(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
+
+function addMsg(html,tipo,card){
+  const d=document.createElement('div');d.className='msg '+tipo;const t=gT();
+  if(tipo==='user'){d.innerHTML=`<div class="msg-row"><div><div class="bubble">${html}</div><div class="msg-t">${t}</div></div></div>`;}
+  else{d.innerHTML=`<div class="msg-row"><div class="bot-av">IA</div><div><div class="bubble">${html}${card||''}</div><div class="msg-t">${t}</div></div></div>`;}
+  const c=document.getElementById('chatMsgs');c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function showTyping(){
+  const d=document.createElement('div');d.className='msg bot';d.id='typing';
+  d.innerHTML=`<div class="msg-row"><div class="bot-av">IA</div><div class="typing"><span></span><span></span><span></span></div></div>`;
+  const c=document.getElementById('chatMsgs');c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function enviar(){
+  const inp=document.getElementById('chatIn');const txt=inp.value.trim();if(!txt)return;
+  addMsg(txt,'user',null);inp.value='';showTyping();
+  setTimeout(()=>{const ty=document.getElementById('typing');if(ty)ty.remove();const r=buildResp(parse(txt));addMsg(r.m,'bot',r.c||null);},1300);
+}
+
+function sc(t){document.getElementById('chatIn').value=t;enviar();}
+
+function simVoz(){
+  const b=document.querySelector('.mic-btn');b.textContent='🔴';
+  setTimeout(()=>{b.textContent='🎙️';document.getElementById('chatIn').value='Cerré contrato con Juan Pérez, Toyota Hilux, 5 días a Gs. 350.000 por día';enviar();},2000);
+}
+
+function confirmar(tipo,cliente,vehiculo,monto){
+  const ic={contrato:'📋',devolucion:'🔄',pago:'💰',mantenimiento:'🔧',reserva:'📅'};
+  const lb={contrato:'Contrato registrado',devolucion:'Devolución confirmada',pago:'Cobro registrado',mantenimiento:'Mantenimiento registrado',reserva:'Reserva registrada'};
+  const f=new Date().toLocaleDateString('es-PY');
+  let detalle=vehiculo&&vehiculo!=='?'?vehiculo:'';
+  if(cliente&&cliente!=='?')detalle+=(detalle?' · ':'')+cliente;
+  if(monto>0)detalle+=' · Gs. '+parseInt(monto).toLocaleString('es');
+  addMsg(`✅ <strong>${lb[tipo]}</strong><br><br>${ic[tipo]} ${detalle}<br>📅 ${f}<br>💾 Guardado — sincronizará con el servidor al conectar`,'bot',null);
+  const actList=document.getElementById('actList');
+  if(actList){
+    const item=document.createElement('div');item.className='act-item';
+    item.innerHTML=`<div class="act-ic ac-c">🤖</div><div class="act-txt"><div class="at">IA registró: ${lb[tipo].toLowerCase()}</div><div class="as">${detalle} · ${f}</div></div><div class="act-r"><div class="act-time">Ahora</div></div>`;
+    actList.prepend(item);
+  }
+}
 </script>
 </body>
 </html>
