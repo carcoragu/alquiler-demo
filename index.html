@@ -262,6 +262,28 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
 .agenda-date .ad-day{font-size:1.1rem;font-weight:900;color:var(--az);}
 .agenda-date .ad-label{font-size:.6rem;color:var(--sub);text-transform:uppercase;font-weight:700;}
 
+/* SEGUROS */
+.seg-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.seg-kpi{background:#fff;border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(--sombra);}
+.seg-kpi .sk-v{font-size:1.6rem;font-weight:900;}
+.seg-kpi .sk-l{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-top:4px;}
+.seg-item{background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:var(--sombra);border-left:4px solid #e0e0e0;}
+.seg-item.ok{border-left-color:#2e7d32;}
+.seg-item.warn{border-left-color:#e65100;}
+.seg-item.vencido{border-left-color:#c62828;}
+.seg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.seg-veh{font-size:.92rem;font-weight:800;}
+.seg-badge{font-size:.65rem;font-weight:800;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;}
+.sb-ok{background:#e8f5e9;color:#2e7d32;}
+.sb-warn{background:#fff3e0;color:#e65100;}
+.sb-venc{background:#fde8e8;color:#c62828;}
+.seg-rows{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;}
+.seg-row{font-size:.75rem;color:var(--sub);}
+.seg-row b{color:var(--texto);}
+.seg-cta{display:flex;gap:8px;margin-top:12px;}
+.btn-agente{flex:1;padding:10px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;}
+.btn-detalle{padding:10px 16px;background:var(--fondo);color:var(--az);border:none;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;}
+
 /* CONTRATO DOC */
 .cont-doc{background:#fff;border-radius:20px;padding:24px;box-shadow:var(--sombra2);}
 .cont-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:18px;border-bottom:2px solid var(--fondo);}
@@ -302,6 +324,7 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
   <button class="sb-item" onclick="go('agenda')"><span class="sb-i">📅</span> Agenda & Reservas</button>
   <button class="sb-item" onclick="go('informes')"><span class="sb-i">📊</span> Informes</button>
   <button class="sb-item" onclick="go('gestion')"><span class="sb-i">💰</span> Gestión & Cobros</button>
+  <button class="sb-item" onclick="go('seguros')"><span class="sb-i">🛡️</span> Seguros & Pólizas</button>
   <div class="sb-sec">Asistente</div>
   <button class="sb-item" onclick="go('chat')"><span class="sb-i">🤖</span> IA Asistente</button>
 </div>
@@ -396,6 +419,15 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
         </div>
         <div class="mod-chip">GESTIÓN</div>
       </button>
+      <button class="mod-card" style="background:linear-gradient(135deg,#b71c1c,#e53935)" onclick="go('seguros')">
+        <div class="mod-iw">🛡️</div>
+        <div class="mod-b">
+          <div class="mod-tag2" style="color:rgba(255,255,255,.6)">IsabSoft</div>
+          <div class="mod-name" style="color:#fff">Seguros & Pólizas</div>
+          <div class="mod-det" style="color:rgba(255,255,255,.75)">1 vencido · 1 por vencer · 3 vigentes</div>
+        </div>
+        <div class="mod-chip" style="background:rgba(255,255,255,.2);color:#fff">SEGUROS</div>
+      </button>
     </div>
 
     <div class="sec">
@@ -408,6 +440,7 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
         <button class="qa" onclick="go('contratos')"><div class="qa-i">📋</div><div class="qa-l">Contratos</div></button>
         <button class="qa" onclick="go('gestion')"><div class="qa-i">💰</div><div class="qa-l">Cobros</div></button>
         <button class="qa" onclick="go('informes')"><div class="qa-i">📊</div><div class="qa-l">Informes</div></button>
+        <button class="qa" onclick="go('seguros')" style="border:2px solid #c62828;"><div class="qa-i">🛡️</div><div class="qa-l" style="color:#c62828;font-weight:900;">Seguros</div></button>
         <button class="qa" onclick="go('chat')" style="border:2px solid var(--az);"><div class="qa-i">🤖</div><div class="qa-l" style="color:var(--az);font-weight:900;">IA Chat</div></button>
       </div>
     </div>
@@ -428,6 +461,16 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
         <div class="al-ic bi">📋</div>
         <div class="al-txt"><div class="at">Reserva próxima — Chevrolet Onix</div><div class="as">Diana Villalba · CONT-005 · Retira 26/05 · 3 días</div></div>
         <div class="al-time">26/05</div>
+      </div>
+      <div class="alert-item red" onclick="go('seguros')">
+        <div class="al-ic ri">🛡️</div>
+        <div class="al-txt"><div class="at">Seguro VENCIDO — Ford Ranger</div><div class="as">Chapa JKL 012 · Aseguradora del Interior · Venció 22/05</div></div>
+        <div class="al-time">Urgente</div>
+      </div>
+      <div class="alert-item orange" onclick="go('seguros')">
+        <div class="al-ic oi">🛡️</div>
+        <div class="al-txt"><div class="at">Seguro vence en 12 días — Toyota Hilux</div><div class="as">Chapa GHI 789 · Mapfre Paraguay · Vence 06/06/2026</div></div>
+        <div class="al-time">06/06</div>
       </div>
     </div>
 
@@ -734,6 +777,38 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- ═══ SEGUROS ═══ -->
+<div class="screen" id="s-seguros">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">🛡️ Seguros & Pólizas</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:16px 16px 90px;">
+    <div class="seg-stat">
+      <div class="seg-kpi"><div class="sk-v" style="color:#c62828">1</div><div class="sk-l">Vencido</div></div>
+      <div class="seg-kpi"><div class="sk-v" style="color:#e65100">1</div><div class="sk-l">Por vencer</div></div>
+      <div class="seg-kpi"><div class="sk-v" style="color:#2e7d32">3</div><div class="sk-l">Vigentes</div></div>
+    </div>
+
+    <div style="background:#fde8e8;border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+      <span style="font-size:1.4rem">🚨</span>
+      <div>
+        <div style="font-size:.85rem;font-weight:800;color:#c62828">Acción requerida</div>
+        <div style="font-size:.75rem;color:#555;margin-top:2px">Ford Ranger con seguro vencido. Vehículo no debe circular hasta renovar.</div>
+      </div>
+    </div>
+
+    <div id="lista-seguros"></div>
+
+    <div style="background:linear-gradient(135deg,#0a1628,#1565c0);border-radius:16px;padding:20px;margin-top:8px;text-align:center;">
+      <div style="font-size:1.4rem;margin-bottom:8px">📞</div>
+      <div style="color:#fff;font-size:.9rem;font-weight:800;margin-bottom:4px">Agente de seguros asignado</div>
+      <div style="color:rgba(255,255,255,.7);font-size:.78rem;margin-bottom:16px">Carlos Villalba · Especialista en flotas vehiculares</div>
+      <a href="https://wa.me/595981234567?text=Hola%20Carlos%2C%20necesito%20renovar%20p%C3%B3lizas%20de%20mi%20flota." target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:12px 24px;border-radius:30px;font-weight:800;font-size:.9rem;text-decoration:none;">💬 Contactar por WhatsApp</a>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ CHAT IA ═══ -->
 <div class="screen" id="s-chat">
   <div class="topbar">
@@ -774,15 +849,20 @@ table.tbl tbody tr:last-child td{border-bottom:none;}
 // ─── DATA ───────────────────────────────────
 const vehiculos = [
   {id:1,marca:'Hyundai',modelo:'Tucson',año:2021,chapa:'ABC 123',color:'Gris Perla',cat:'SUV',precio:280000,estado:'alquilado',km:45800,cli_id:1,dev:'28/05/2026',
-   mant:[{fecha:'10/03/2026',tipo:'Cambio de aceite y filtros',km:43000},{fecha:'15/09/2025',tipo:'Service 40.000 km',km:40000}]},
+   mant:[{fecha:'10/03/2026',tipo:'Cambio de aceite y filtros',km:43000},{fecha:'15/09/2025',tipo:'Service 40.000 km',km:40000}],
+   seguro:{compania:'Mapfre Paraguay',poliza:'MFP-2024-00112',tipo:'Todo riesgo',vto:'15/11/2026',dias:174,prima:2100000,agente:'Carlos Villalba',tel:'+595981234567'}},
   {id:2,marca:'Toyota',modelo:'Corolla',año:2020,chapa:'DEF 456',color:'Blanco',cat:'Sedán',precio:180000,estado:'disponible',km:68200,cli_id:null,dev:null,
-   mant:[{fecha:'20/04/2026',tipo:'Cambio de aceite + filtros',km:66000}]},
+   mant:[{fecha:'20/04/2026',tipo:'Cambio de aceite + filtros',km:66000}],
+   seguro:{compania:'La Rural del Paraguay',poliza:'LRP-2025-00445',tipo:'Terceros completo',vto:'20/08/2026',dias:87,prima:1400000,agente:'Carlos Villalba',tel:'+595981234567'}},
   {id:3,marca:'Toyota',modelo:'Hilux',año:2022,chapa:'GHI 789',color:'Blanco',cat:'Pickup 4x4',precio:350000,estado:'disponible',km:32100,cli_id:null,dev:null,
-   mant:[{fecha:'05/02/2026',tipo:'Service 30.000 km',km:30000}]},
+   mant:[{fecha:'05/02/2026',tipo:'Service 30.000 km',km:30000}],
+   seguro:{compania:'Mapfre Paraguay',poliza:'MFP-2025-00887',tipo:'Todo riesgo',vto:'06/06/2026',dias:12,prima:2800000,agente:'Carlos Villalba',tel:'+595981234567'}},
   {id:4,marca:'Ford',modelo:'Ranger',año:2023,chapa:'JKL 012',color:'Azul',cat:'Pickup 4x4',precio:400000,estado:'mantenimiento',km:18500,cli_id:null,dev:null,
-   mant:[{fecha:'22/05/2026',tipo:'Revisión frenos y suspensión',km:18500}]},
+   mant:[{fecha:'22/05/2026',tipo:'Revisión frenos y suspensión',km:18500}],
+   seguro:{compania:'Aseguradora del Interior',poliza:'ADI-2023-01120',tipo:'Todo riesgo',vto:'22/05/2026',dias:-3,prima:3100000,agente:'Carlos Villalba',tel:'+595981234567'}},
   {id:5,marca:'Chevrolet',modelo:'Onix',año:2022,chapa:'MNO 345',color:'Rojo',cat:'Compacto',precio:140000,estado:'reservado',km:22300,cli_id:4,dev:'26/05/2026',
-   mant:[{fecha:'10/01/2026',tipo:'Cambio de aceite',km:20000}]},
+   mant:[{fecha:'10/01/2026',tipo:'Cambio de aceite',km:20000}],
+   seguro:{compania:'La Rural del Paraguay',poliza:'LRP-2024-00231',tipo:'Terceros completo',vto:'30/07/2026',dias:66,prima:1100000,agente:'Carlos Villalba',tel:'+595981234567'}},
 ];
 
 const clientes = [
@@ -871,6 +951,17 @@ function verVehiculo(id){
       <div class="det-card">
         <h3>Historial de mantenimiento</h3>
         ${mant}
+      </div>
+      <div class="det-card" style="border-left:4px solid ${v.seguro.dias<0?'#c62828':v.seguro.dias<=30?'#e65100':'#2e7d32'}">
+        <h3>🛡️ Seguro vigente</h3>
+        <div class="drow"><span class="dlbl">Compañía</span><span class="dval">${v.seguro.compania}</span></div>
+        <div class="drow"><span class="dlbl">Póliza</span><span class="dval">${v.seguro.poliza}</span></div>
+        <div class="drow"><span class="dlbl">Tipo</span><span class="dval">${v.seguro.tipo}</span></div>
+        <div class="drow"><span class="dlbl">Vencimiento</span><span class="dval" style="font-weight:800;color:${v.seguro.dias<0?'#c62828':v.seguro.dias<=30?'#e65100':'#2e7d32'}">${v.seguro.vto} ${v.seguro.dias<0?'⚠️ VENCIDO':v.seguro.dias<=30?'⚠️ '+v.seguro.dias+' días':''}</span></div>
+        <div class="drow"><span class="dlbl">Prima anual</span><span class="dval">Gs. ${v.seguro.prima.toLocaleString()}</span></div>
+        <div style="margin-top:12px;">
+          <a href="https://wa.me/${v.seguro.tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(v.seguro.agente)}%2C%20necesito%20renovar%20el%20seguro%20del%20${encodeURIComponent(v.marca+' '+v.modelo)}%20chapa%20${encodeURIComponent(v.chapa)}." target="_blank" class="btn-agente">📲 Contactar agente</a>
+        </div>
       </div>
     </div>`;
   go('vehiculo');
@@ -1052,10 +1143,39 @@ function guardarContrato(){
   go('contratos');
 }
 
+// ─── SEGUROS ─────────────────────────────────
+function renderSeguros(){
+  const sorted = [...vehiculos].sort((a,b)=>a.seguro.dias-b.seguro.dias);
+  document.getElementById('lista-seguros').innerHTML = sorted.map(v=>{
+    const s = v.seguro;
+    const cls = s.dias<0?'vencido':s.dias<=30?'warn':'ok';
+    const badgeCls = s.dias<0?'sb-venc':s.dias<=30?'sb-warn':'sb-ok';
+    const badgeTxt = s.dias<0?'VENCIDO':s.dias<=30?`Vence en ${s.dias} días`:'Vigente';
+    return `<div class="seg-item ${cls}">
+      <div class="seg-head">
+        <div class="seg-veh">🚗 ${v.marca} ${v.modelo} · <span style="font-weight:400;color:var(--sub)">${v.chapa}</span></div>
+        <span class="seg-badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="seg-rows">
+        <div class="seg-row">Compañía: <b>${s.compania}</b></div>
+        <div class="seg-row">Póliza: <b>${s.poliza}</b></div>
+        <div class="seg-row">Tipo: <b>${s.tipo}</b></div>
+        <div class="seg-row">Vence: <b>${s.vto}</b></div>
+        <div class="seg-row">Prima anual: <b>Gs. ${s.prima.toLocaleString()}</b></div>
+      </div>
+      <div class="seg-cta">
+        <a href="https://wa.me/${s.tel.replace(/\D/g,'')}?text=Hola%20${encodeURIComponent(s.agente)}%2C%20necesito%20gestionar%20el%20seguro%20del%20${encodeURIComponent(v.marca+' '+v.modelo)}%20chapa%20${encodeURIComponent(v.chapa)}." target="_blank" class="btn-agente">📲 Contactar agente</a>
+        <button class="btn-detalle" onclick="verVehiculo(${v.id})">Ver vehículo</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ─── INIT ────────────────────────────────────
 renderFlota();
 renderClientes();
 renderContratos();
+renderSeguros();
 
 // ─── PWA ─────────────────────────────────────
 if('serviceWorker' in navigator){
