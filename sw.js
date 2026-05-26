@@ -1,4 +1,4 @@
-const CACHE = 'fleetcontrol-v1';
+const CACHE = 'fleetcontrol-v3';
 const FILES = [
   '/alquiler-demo/',
   '/alquiler-demo/index.html',
