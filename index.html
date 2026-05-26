@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>IsabSoft | Alquiler de Vehículos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --az:#1565c0;--az2:#1e88e5;--az3:#0d47a1;
+  --verde:#2e7d32;--rojo:#c62828;--naranja:#e65100;--purp:#6a1b9a;
+  --fondo:#f0f4f9;--blanco:#fff;--texto:#1a1a2e;--sub:#8a8a9a;
+  --sombra:0 4px 20px rgba(0,0,0,.08);--sombra2:0 8px 32px rgba(0,0,0,.14);
+}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var(--fondo);color:var(--texto);}
+#app{display:flex;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;background:var(--fondo);}
+@media(min-width:900px){
+  #app{max-width:100%;flex-direction:row;}
+  #sidebar{display:flex!important;width:260px;flex-shrink:0;flex-direction:column;background:#0a1628;}
+  #content{flex:1;overflow-y:auto;}
+  #bottomnav{display:none!important;}
+}
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* LOGIN */
+#s-login{background:url('portada.jpg') center/cover no-repeat;align-items:center;justify-content:center;padding:48px 24px;position:relative;}
+#s-login::before{content:'';position:absolute;inset:0;background:rgba(5,20,60,.82);}
+#s-login > *{position:relative;z-index:1;}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo img{height:80px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4));}
+.login-logo p{color:rgba(255,255,255,.72);font-size:.85rem;margin-top:10px;}
+.login-card{background:#fff;border-radius:24px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-card h2{font-size:1.1rem;color:var(--az);margin-bottom:22px;font-weight:800;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:.72rem;font-weight:700;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;}
+.field input,.field select{width:100%;padding:13px 16px;border:2px solid #e8e8f0;border-radius:12px;font-size:.95rem;outline:none;background:#fafafa;transition:border .2s;}
+.field input:focus,.field select:focus{border-color:var(--az2);background:#fff;}
+.btn-login{width:100%;padding:15px;background:linear-gradient(135deg,var(--az3),var(--az),var(--az2));color:#fff;border:none;border-radius:30px;font-size:1rem;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .2s;}
+.btn-login:hover{opacity:.9;}
+.login-hint{text-align:center;font-size:.75rem;color:var(--sub);margin-top:14px;}
+
+/* SIDEBAR */
+#sidebar{display:none;background:#0a1628;color:#fff;}
+.sb-logo{padding:24px 22px 18px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-logo img{height:44px;object-fit:contain;display:block;margin-bottom:6px;}
+.sb-logo p{font-size:.68rem;color:rgba(255,255,255,.4);}
+.sb-user{padding:14px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:12px;}
+.sb-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--az),var(--az2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;}
+.sb-info .name{font-size:.88rem;font-weight:700;}
+.sb-info .role{font-size:.7rem;color:rgba(255,255,255,.45);}
+.sb-dot{margin-left:auto;width:8px;height:8px;border-radius:50%;background:#69f0ae;box-shadow:0 0 8px #69f0ae;}
+.sb-sec{padding:16px 22px 6px;font-size:.6rem;font-weight:800;letter-spacing:2.5px;color:rgba(255,255,255,.25);text-transform:uppercase;}
+.sb-item{display:flex;align-items:center;gap:13px;padding:11px 22px;cursor:pointer;font-size:.87rem;color:rgba(255,255,255,.65);transition:all .15s;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;}
+.sb-item:hover,.sb-item.act{background:rgba(255,255,255,.06);color:#fff;border-left-color:var(--az2);}
+.sb-i{font-size:1rem;width:20px;text-align:center;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;padding:14px 18px;background:#fff;border-bottom:1px solid #eaeaf0;position:sticky;top:0;z-index:20;gap:10px;}
+.back-btn{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--az);padding:0 8px 0 0;}
+.ttitle{font-size:1rem;font-weight:800;flex:1;}
+.online-badge{background:#e8f5e9;color:#2e7d32;font-size:.65rem;font-weight:800;padding:4px 10px;border-radius:20px;}
+
+/* BOTTOM NAV */
+#bottomnav{display:flex;background:#fff;border-top:1px solid #eaeaf0;position:sticky;bottom:0;z-index:20;box-shadow:0 -4px 20px rgba(0,0,0,.06);}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 4px 9px;cursor:pointer;color:var(--sub);border:none;background:none;}
+.bn.act{color:var(--az);}
+.bn-i{font-size:1.25rem;}
+.bn-l{font-size:.58rem;font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.3px;}
+
+/* DASHBOARD HEADER */
+.dash-hdr{padding:24px 20px 52px;color:#fff;position:relative;overflow:hidden;}
+.dash-bg{position:absolute;inset:0;background:url('portada.jpg') center/cover no-repeat;}
+.dash-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,20,60,.9) 0%,rgba(10,60,150,.82) 60%,rgba(5,20,60,.9) 100%);}
+.dh-inner{position:relative;z-index:1;}
+.dh-tag{font-size:.63rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;}
+.dh-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.dh-name{font-size:1.4rem;font-weight:900;line-height:1.15;}
+.dh-sub{font-size:.77rem;color:rgba(255,255,255,.6);margin-top:5px;}
+.dh-av{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;flex-shrink:0;}
+.dh-pills{display:flex;gap:7px;margin-top:18px;flex-wrap:wrap;}
+.dh-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 12px;font-size:.7rem;display:flex;align-items:center;gap:6px;}
+.dot{width:7px;height:7px;border-radius:50%;}
+.dot.g{background:#69f0ae;box-shadow:0 0 6px #69f0ae80;}
+.dot.o{background:#ffab40;box-shadow:0 0 6px #ffab4080;}
+.dot.r{background:#ff5252;box-shadow:0 0 6px #ff525280;}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px;margin-top:-36px;position:relative;z-index:2;}
+.kpi{background:#fff;border-radius:18px;padding:18px 16px;box-shadow:var(--sombra2);border-top:4px solid transparent;}
+.kpi.k1{border-top-color:var(--az2);}
+.kpi.k2{border-top-color:#43a047;}
+.kpi.k3{border-top-color:var(--purp);}
+.kpi.k4{border-top-color:#e64a19;}
+.kpi-lbl{font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-bottom:6px;}
+.kpi-num{font-size:1.6rem;font-weight:900;color:var(--texto);line-height:1;}
+.kpi-desc{font-size:.67rem;color:#bbb;margin-top:3px;}
+.kpi-trend{font-size:.67rem;font-weight:800;margin-top:6px;}
+.kpi-trend.up{color:#2e7d32;}
+.kpi-trend.warn{color:#e65100;}
+
+/* SECCIONES */
+.sec{padding:18px 16px 0;}
+.sec-title{font-size:.67rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:12px;}
+
+/* MODULE CARDS */
+.mod-card{border-radius:20px;padding:20px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:16px;box-shadow:var(--sombra2);margin-bottom:12px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;border:none;width:100%;text-align:left;}
+.mod-card::before{content:'';position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07);}
+.mod-card::after{content:'›';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:1.6rem;opacity:.4;font-weight:300;}
+.mod-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.2);}
+.mod-flota{background:linear-gradient(135deg,#0d2757,#1565c0,#1e88e5);}
+.mod-gest{background:linear-gradient(135deg,#0a1f44,#0d47a1,#1565c0);}
+.mod-iw{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.mod-b{flex:1;}
+.mod-tag2{font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.65;margin-bottom:3px;}
+.mod-name{font-size:1.1rem;font-weight:900;}
+.mod-det{font-size:.72rem;opacity:.72;margin-top:4px;line-height:1.4;}
+.mod-chip{position:absolute;top:14px;right:36px;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 9px;font-size:.62rem;font-weight:800;}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.qa{background:#fff;border-radius:16px;padding:14px 6px;text-align:center;cursor:pointer;box-shadow:var(--sombra);transition:transform .15s,box-shadow .15s;border:none;}
+.qa:hover{transform:translateY(-3px);box-shadow:var(--sombra2);}
+.qa-i{font-size:1.5rem;}
+.qa-l{font-size:.6rem;color:var(--sub);margin-top:5px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;}
+
+/* ALERTAS */
+.alert-item{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);border-left:4px solid transparent;cursor:pointer;}
+.alert-item.red{border-left-color:#d32f2f;}
+.alert-item.orange{border-left-color:#f57c00;}
+.alert-item.blue{border-left-color:#1976d2;}
+.al-ic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ri{background:#fde8e8;}.oi{background:#fff3e0;}.bi{background:#e3f2fd;}
+.al-txt .at{font-size:.85rem;font-weight:700;}
+.al-txt .as{font-size:.7rem;color:var(--sub);margin-top:2px;}
+.al-time{margin-left:auto;font-size:.65rem;color:#ccc;white-space:nowrap;}
+
+/* ACTIVIDAD */
+.act-item{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);}
+.act-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ac-a{background:#e3f2fd;}.ac-b{background:#e8f5e9;}.ac-c{background:#fff3e0;}.ac-d{background:#fce4ec;}
+.act-txt .at{font-size:.87rem;font-weight:700;}
+.act-txt .as{font-size:.72rem;color:var(--sub);margin-top:2px;}
+.act-r{margin-left:auto;text-align:right;flex-shrink:0;}
+.act-time{font-size:.65rem;color:#ccc;}
+.act-val{font-size:.75rem;font-weight:800;color:var(--az);margin-top:2px;}
+
+/* MOD HEADER */
+.mod-header{padding:22px 18px 36px;color:#fff;position:relative;overflow:hidden;}
+.mod-header::after{content:'';position:absolute;bottom:-50px;right:-30px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);}
+.mh-flota{background:linear-gradient(135deg,#0d2757,#1565c0,#1e88e5);}
+.mh-gest{background:linear-gradient(135deg,#0a1f44,#0d47a1,#1565c0);}
+.mh-green{background:linear-gradient(135deg,#1b5e20,#2e7d32,#43a047);}
+.mod-header h1{font-size:1.2rem;font-weight:900;position:relative;z-index:1;}
+.mod-header p{font-size:.78rem;opacity:.75;margin-top:4px;position:relative;z-index:1;}
+.stat-strip{display:flex;gap:8px;margin-top:16px;position:relative;z-index:1;flex-wrap:wrap;}
+.stat-p{background:rgba(255,255,255,.14);border-radius:12px;padding:10px 12px;flex:1;text-align:center;min-width:60px;}
+.sv{font-size:1.4rem;font-weight:900;}
+.sl{font-size:.62rem;opacity:.75;margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* LIST */
+.list-box{padding:14px 16px 90px;}
+.li{background:#fff;border-radius:14px;padding:15px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:var(--sombra);cursor:pointer;transition:transform .15s;}
+.li:hover{transform:translateX(4px);}
+.li-ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.li-az{background:#e3f2fd;}.li-gr{background:#e8f5e9;}.li-or{background:#fff3e0;}.li-re{background:#fde8e8;}.li-pu{background:#f3e5f5;}
+.li-inf .lt{font-size:.9rem;font-weight:700;}
+.li-inf .ls{font-size:.72rem;color:var(--sub);margin-top:2px;}
+.li-st{margin-left:auto;font-size:.7rem;font-weight:800;padding:5px 11px;border-radius:10px;white-space:nowrap;text-align:center;}
+.st-disp{background:#e8f5e9;color:#2e7d32;}
+.st-alq{background:#e3f2fd;color:#1565c0;}
+.st-mant{background:#fff3e0;color:#e65100;}
+.st-res{background:#f3e5f5;color:#6a1b9a;}
+.st-act{background:#e3f2fd;color:#1565c0;}
+.st-cob{background:#e8f5e9;color:#2e7d32;}
+.st-pend{background:#fff8e1;color:#f57f17;}
+
+/* DETALLE */
+.det-wrap{padding:16px;padding-bottom:90px;}
+.det-card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:var(--sombra);}
+.det-card h3{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--sub);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--fondo);}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--fondo);font-size:.84rem;}
+.drow:last-child{border-bottom:none;}
+.dlbl{color:var(--sub);}
+.dval{font-weight:600;text-align:right;}
+
+/* CHAPA BADGE */
+.chapa{background:#e3f2fd;color:#1565c0;font-weight:800;font-size:.75rem;padding:5px 11px;border-radius:8px;letter-spacing:1px;}
+
+/* FORMULARIOS */
+.form-body{padding:16px;padding-bottom:110px;}
+.f-card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:var(--sombra);}
+.f-card h3{font-size:.9rem;font-weight:800;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--fondo);}
+.ff{margin-bottom:14px;}
+.ff label{display:block;font-size:.67rem;font-weight:800;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:.8px;}
+.ff input,.ff select{width:100%;padding:12px 14px;border:2px solid #e8e8f0;border-radius:12px;font-size:.9rem;outline:none;font-family:inherit;background:#fafafa;transition:border .2s;}
+.ff input:focus,.ff select:focus{border-color:var(--az2);background:#fff;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f-total{background:linear-gradient(135deg,var(--az3),var(--az));border-radius:14px;padding:20px;text-align:center;color:#fff;margin-bottom:14px;}
+.f-total .tl{font-size:.72rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:1px;}
+.f-total .tv{font-size:2rem;font-weight:900;}
+.btn-save{width:100%;padding:15px;border:none;border-radius:30px;font-size:1rem;font-weight:800;color:#fff;cursor:pointer;transition:opacity .15s;background:linear-gradient(135deg,var(--az3),var(--az),var(--az2));}
+.btn-save:hover{opacity:.9;}
+.btn-sec{width:100%;padding:13px;border:2px solid var(--az);border-radius:30px;font-size:.95rem;font-weight:700;color:var(--az);cursor:pointer;background:none;margin-top:10px;}
+
+/* TABLA */
+.tbl-wrap{overflow-x:auto;}
+table.tbl{width:100%;border-collapse:collapse;font-size:.8rem;}
+table.tbl thead tr{background:var(--az);color:#fff;}
+table.tbl thead th{padding:10px;text-align:left;font-size:.72rem;}
+table.tbl tbody td{padding:10px;border-bottom:1px solid var(--fondo);}
+table.tbl tbody tr:last-child td{border-bottom:none;}
+.tr-total td{background:#e3f2fd;color:var(--az3);font-weight:800;border-top:2px solid var(--az);}
+
+/* FAB */
+.fab{position:fixed;bottom:78px;right:18px;width:58px;height:58px;border-radius:50%;border:none;font-size:1.5rem;color:#fff;cursor:pointer;z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:transform .15s;background:linear-gradient(135deg,var(--az3),var(--az2));}
+.fab:hover{transform:scale(1.1);}
+@media(min-width:900px){.fab{bottom:32px;right:32px;}}
+
+/* AGENDA ITEMS */
+.agenda-item{background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:var(--sombra);display:flex;gap:14px;align-items:flex-start;}
+.agenda-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.agenda-body .ab-title{font-size:.9rem;font-weight:700;}
+.agenda-body .ab-sub{font-size:.73rem;color:var(--sub);margin-top:3px;line-height:1.5;}
+.agenda-date{margin-left:auto;text-align:right;flex-shrink:0;}
+.agenda-date .ad-day{font-size:1.1rem;font-weight:900;color:var(--az);}
+.agenda-date .ad-label{font-size:.6rem;color:var(--sub);text-transform:uppercase;font-weight:700;}
+
+/* CONTRATO DOC */
+.cont-doc{background:#fff;border-radius:20px;padding:24px;box-shadow:var(--sombra2);}
+.cont-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:18px;border-bottom:2px solid var(--fondo);}
+.ct-brand .cb-name{font-size:1.1rem;font-weight:900;color:var(--az);}
+.ct-brand .cb-sub{font-size:.72rem;color:var(--sub);margin-top:2px;}
+.ct-meta{text-align:right;font-size:.72rem;color:var(--sub);line-height:1.8;}
+.cont-veh{background:#f0f4f9;border-radius:12px;padding:14px;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.cv-icon{font-size:2rem;}
+.cv-info .cv-name{font-size:1rem;font-weight:800;}
+.cv-info .cv-sub{font-size:.75rem;color:var(--sub);margin-top:2px;}
+.cont-wa{display:flex;gap:10px;margin-top:16px;}
+.btn-wa{flex:1;padding:13px;border:none;border-radius:20px;background:#25D366;color:#fff;font-weight:800;font-size:.9rem;cursor:pointer;}
+.btn-print{flex:1;padding:13px;border:2px solid var(--az);border-radius:20px;background:none;color:var(--az);font-weight:700;font-size:.9rem;cursor:pointer;}
+.btn-back{flex:1;padding:13px;border:none;border-radius:20px;background:#f0f4f9;color:var(--sub);font-weight:700;font-size:.9rem;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-logo">
+    <img src="logo.png" alt="IsabSoft"/>
+    <p>Sistema de Alquiler de Vehículos · Paraguay</p>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av">RS</div>
+    <div class="sb-info"><div class="name">Rodrigo Sarubbi</div><div class="role">Administrador · INGEMON</div></div>
+    <div class="sb-dot"></div>
+  </div>
+  <div class="sb-sec">Principal</div>
+  <button class="sb-item act" onclick="go('home')"><span class="sb-i">🏠</span> Dashboard</button>
+  <div class="sb-sec">Flota & Clientes</div>
+  <button class="sb-item" onclick="go('flota')"><span class="sb-i">🚗</span> Flota de Vehículos</button>
+  <button class="sb-item" onclick="go('clientes')"><span class="sb-i">👥</span> Clientes</button>
+  <button class="sb-item" onclick="go('contratos')"><span class="sb-i">📋</span> Contratos</button>
+  <div class="sb-sec">Análisis</div>
+  <button class="sb-item" onclick="go('agenda')"><span class="sb-i">📅</span> Agenda & Reservas</button>
+  <button class="sb-item" onclick="go('informes')"><span class="sb-i">📊</span> Informes</button>
+  <button class="sb-item" onclick="go('gestion')"><span class="sb-i">💰</span> Gestión & Cobros</button>
+</div>
+
+<div id="content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+
+<!-- ═══ LOGIN ═══ -->
+<div class="screen active" id="s-login">
+  <div class="login-logo">
+    <img src="logo.png" alt="IsabSoft"/>
+    <p>Sistema de Alquiler de Vehículos · Paraguay</p>
+  </div>
+  <div class="login-card">
+    <h2>Iniciar sesión</h2>
+    <div class="field"><label>Usuario</label><input type="text" value="rodrigo@ingemon.com.py"/></div>
+    <div class="field"><label>Contraseña</label><input type="password" value="12345678"/></div>
+    <div class="field"><label>Empresa</label>
+      <select><option>INGEMON — Alquiler de Vehículos</option></select>
+    </div>
+    <button class="btn-login" onclick="go('home')">Ingresar al sistema →</button>
+    <p class="login-hint">v1.0 · IsabSoft Soluciones Oportunas</p>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="screen" id="s-home">
+  <div style="overflow-y:auto;flex:1;">
+    <div class="dash-hdr">
+      <div class="dash-bg"></div>
+      <div class="dh-inner">
+        <img src="logo.png" style="height:36px;object-fit:contain;margin-bottom:14px;display:block;"/>
+        <div class="dh-row">
+          <div>
+            <div class="dh-tag">IsabSoft · Alquiler de Vehículos</div>
+            <div class="dh-name">Buen día, Rodrigo 👋</div>
+            <div class="dh-sub">📍 INGEMON · Asunción, Paraguay</div>
+          </div>
+          <div class="dh-av">RS</div>
+        </div>
+        <div class="dh-pills">
+          <div class="dh-pill"><div class="dot g"></div>Sistema online</div>
+          <div class="dh-pill"><div class="dot g"></div>3 disponibles</div>
+          <div class="dh-pill"><div class="dot o"></div>2 alertas hoy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi k1">
+        <div class="kpi-lbl">Flota disponible</div>
+        <div class="kpi-num">3/5</div>
+        <div class="kpi-desc">1 en alquiler · 1 en taller</div>
+        <div class="kpi-trend up">▲ Hilux y Corolla libres</div>
+      </div>
+      <div class="kpi k2">
+        <div class="kpi-lbl">Contratos activos</div>
+        <div class="kpi-num">2</div>
+        <div class="kpi-desc">1 activo · 1 reserva</div>
+        <div class="kpi-trend up">▲ 1 devolución hoy</div>
+      </div>
+      <div class="kpi k3">
+        <div class="kpi-lbl">Ingresos mayo</div>
+        <div class="kpi-num" style="font-size:1.1rem">Gs. 3,6M</div>
+        <div class="kpi-desc">3 contratos cerrados</div>
+        <div class="kpi-trend up">▲ +18% vs abril</div>
+      </div>
+      <div class="kpi k4">
+        <div class="kpi-lbl">Alertas activas</div>
+        <div class="kpi-num">2</div>
+        <div class="kpi-desc">Requieren acción hoy</div>
+        <div class="kpi-trend warn">⚠ Ver agenda</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">Módulos del sistema</div>
+      <button class="mod-card mod-flota" onclick="go('flota')">
+        <div class="mod-iw">🚗</div>
+        <div class="mod-b">
+          <div class="mod-tag2">IsabSoft</div>
+          <div class="mod-name">Flota & Contratos</div>
+          <div class="mod-det">5 vehículos · 3 disponibles · 1 en alquiler · 1 en mantenimiento</div>
+        </div>
+        <div class="mod-chip">FLOTA</div>
+      </button>
+      <button class="mod-card mod-gest" onclick="go('informes')">
+        <div class="mod-iw">📊</div>
+        <div class="mod-b">
+          <div class="mod-tag2">IsabSoft</div>
+          <div class="mod-name">Informes & Gestión</div>
+          <div class="mod-det">Gs. 3.640.000 en mayo · Hilux es el más rentable · 2 cobros pendientes</div>
+        </div>
+        <div class="mod-chip">GESTIÓN</div>
+      </button>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">Acciones rápidas</div>
+      <div class="qa-grid">
+        <button class="qa" onclick="go('nuevo')"><div class="qa-i">➕</div><div class="qa-l">Nuevo Contrato</div></button>
+        <button class="qa" onclick="go('flota')"><div class="qa-i">🚗</div><div class="qa-l">Flota</div></button>
+        <button class="qa" onclick="go('clientes')"><div class="qa-i">👥</div><div class="qa-l">Clientes</div></button>
+        <button class="qa" onclick="go('agenda')"><div class="qa-i">📅</div><div class="qa-l">Agenda</div></button>
+        <button class="qa" onclick="go('contratos')"><div class="qa-i">📋</div><div class="qa-l">Contratos</div></button>
+        <button class="qa" onclick="go('gestion')"><div class="qa-i">💰</div><div class="qa-l">Cobros</div></button>
+        <button class="qa" onclick="go('informes')"><div class="qa-i">📊</div><div class="qa-l">Informes</div></button>
+        <button class="qa" onclick="go('flota')" style="border:2px solid var(--az);"><div class="qa-i">🔧</div><div class="qa-l" style="color:var(--az)">Mantenimiento</div></button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">Alertas del día</div>
+      <div class="alert-item red" onclick="go('contratos')">
+        <div class="al-ic ri">📅</div>
+        <div class="al-txt"><div class="at">Devolución hoy — Hyundai Tucson</div><div class="as">Carlos Garay · CONT-004 · 28/05/2026 · Chapa ABC 123</div></div>
+        <div class="al-time">Hoy</div>
+      </div>
+      <div class="alert-item orange" onclick="go('flota')">
+        <div class="al-ic oi">🔧</div>
+        <div class="al-txt"><div class="at">Ford Ranger en mantenimiento</div><div class="as">Chapa JKL 012 · Revisión frenos y suspensión · Desde 22/05</div></div>
+        <div class="al-time">Taller</div>
+      </div>
+      <div class="alert-item blue" onclick="go('agenda')">
+        <div class="al-ic bi">📋</div>
+        <div class="al-txt"><div class="at">Reserva próxima — Chevrolet Onix</div><div class="as">Diana Villalba · CONT-005 · Retira 26/05 · 3 días</div></div>
+        <div class="al-time">26/05</div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-title">Actividad reciente</div></div>
+    <div style="padding:0 16px 90px;">
+      <div class="act-item">
+        <div class="act-ic ac-a">📋</div>
+        <div class="act-txt"><div class="at">Contrato CONT-004 abierto</div><div class="as">Carlos Garay · Hyundai Tucson · 4 días</div></div>
+        <div class="act-r"><div class="act-time">24/05</div><div class="act-val">Gs. 1.120.000</div></div>
+      </div>
+      <div class="act-item">
+        <div class="act-ic ac-b">✅</div>
+        <div class="act-txt"><div class="at">Cobro confirmado · CONT-003</div><div class="as">Roberto Acosta · Toyota Corolla</div></div>
+        <div class="act-r"><div class="act-time">22/05</div><div class="act-val">Gs. 720.000</div></div>
+      </div>
+      <div class="act-item">
+        <div class="act-ic ac-c">🔧</div>
+        <div class="act-txt"><div class="at">Ranger ingresó a mantenimiento</div><div class="as">Chapa JKL 012 · Frenos y suspensión</div></div>
+        <div class="act-r"><div class="act-time">22/05</div></div>
+      </div>
+      <div class="act-item">
+        <div class="act-ic ac-b">✅</div>
+        <div class="act-txt"><div class="at">Cobro confirmado · CONT-002</div><div class="as">Laura Fernández · Toyota Hilux</div></div>
+        <div class="act-r"><div class="act-time">14/05</div><div class="act-val">Gs. 1.400.000</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="bottomnav">
+    <button class="bn act" onclick="go('home')"><span class="bn-i">🏠</span><span class="bn-l">Inicio</span></button>
+    <button class="bn" onclick="go('flota')"><span class="bn-i">🚗</span><span class="bn-l">Flota</span></button>
+    <button class="bn" onclick="go('contratos')"><span class="bn-i">📋</span><span class="bn-l">Contratos</span></button>
+    <button class="bn" onclick="go('agenda')"><span class="bn-i">📅</span><span class="bn-l">Agenda</span></button>
+  </div>
+</div>
+
+<!-- ═══ FLOTA ═══ -->
+<div class="screen" id="s-flota">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">🚗 Flota de Vehículos</span>
+    <span class="online-badge">● Online</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="mod-header mh-flota">
+      <h1>Flota de Vehículos</h1>
+      <p>Control completo de disponibilidad y mantenimiento</p>
+      <div class="stat-strip">
+        <div class="stat-p"><div class="sv">5</div><div class="sl">Total</div></div>
+        <div class="stat-p"><div class="sv">3</div><div class="sl">Disponibles</div></div>
+        <div class="stat-p"><div class="sv">1</div><div class="sl">En Alquiler</div></div>
+        <div class="stat-p"><div class="sv">1</div><div class="sl">Mantenimiento</div></div>
+      </div>
+    </div>
+    <div class="list-box" id="lista-flota"></div>
+  </div>
+</div>
+
+<!-- ═══ DETALLE VEHÍCULO ═══ -->
+<div class="screen" id="s-vehiculo">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('flota')">←</button>
+    <span class="ttitle">Detalle Vehículo</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div id="det-vehiculo"></div>
+  </div>
+</div>
+
+<!-- ═══ CLIENTES ═══ -->
+<div class="screen" id="s-clientes">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">👥 Clientes</span>
+    <span class="online-badge" id="cnt-cli">4</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="mod-header mh-green">
+      <h1>Clientes Registrados</h1>
+      <p>Conductores habilitados para alquiler</p>
+      <div class="stat-strip">
+        <div class="stat-p"><div class="sv">4</div><div class="sl">Clientes</div></div>
+        <div class="stat-p"><div class="sv">7</div><div class="sl">Contratos</div></div>
+        <div class="stat-p"><div class="sv" style="font-size:.95rem">Gs. 3,6M</div><div class="sl">Historial</div></div>
+      </div>
+    </div>
+    <div class="list-box" id="lista-clientes"></div>
+  </div>
+</div>
+
+<!-- ═══ DETALLE CLIENTE ═══ -->
+<div class="screen" id="s-cliente">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('clientes')">←</button>
+    <span class="ttitle">Detalle Cliente</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div id="det-cliente"></div>
+  </div>
+</div>
+
+<!-- ═══ CONTRATOS ═══ -->
+<div class="screen" id="s-contratos">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">📋 Contratos</span>
+    <span class="online-badge" id="cnt-cont">5</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="mod-header mh-flota">
+      <h1>Contratos de Alquiler</h1>
+      <p>Gestión de entradas y devoluciones</p>
+      <div class="stat-strip">
+        <div class="stat-p"><div class="sv">1</div><div class="sl">Activos</div></div>
+        <div class="stat-p"><div class="sv">1</div><div class="sl">Reservas</div></div>
+        <div class="stat-p"><div class="sv">3</div><div class="sl">Finalizados</div></div>
+        <div class="stat-p"><div class="sv" style="font-size:.9rem">Gs. 3,6M</div><div class="sl">Total mayo</div></div>
+      </div>
+    </div>
+    <div class="list-box" id="lista-contratos"></div>
+  </div>
+  <button class="fab" onclick="go('nuevo')">➕</button>
+</div>
+
+<!-- ═══ VER CONTRATO ═══ -->
+<div class="screen" id="s-contrato">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('contratos')">←</button>
+    <span class="ttitle">Contrato</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:16px 16px 90px;">
+    <div id="det-contrato"></div>
+  </div>
+</div>
+
+<!-- ═══ NUEVO CONTRATO ═══ -->
+<div class="screen" id="s-nuevo">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('contratos')">←</button>
+    <span class="ttitle">➕ Nuevo Contrato</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="form-body">
+      <div class="f-card">
+        <h3>Datos del contrato</h3>
+        <div class="ff"><label>Cliente</label>
+          <select id="nc-cliente" onchange="actualizarTotal()">
+            <option value="">Seleccionar cliente...</option>
+          </select>
+        </div>
+        <div class="ff"><label>Vehículo disponible</label>
+          <select id="nc-vehiculo" onchange="actualizarTotal()">
+            <option value="">Seleccionar vehículo...</option>
+          </select>
+        </div>
+        <div class="f-row">
+          <div class="ff"><label>Fecha salida</label><input type="date" id="nc-desde" oninput="actualizarTotal()"></div>
+          <div class="ff"><label>Fecha devolución</label><input type="date" id="nc-hasta" oninput="actualizarTotal()"></div>
+        </div>
+        <div class="ff"><label>Km al salir</label><input type="number" id="nc-km" placeholder="0"></div>
+        <div class="ff"><label>Observaciones</label><input type="text" id="nc-obs" placeholder="Opcional..."></div>
+      </div>
+      <div class="f-total">
+        <div class="tl">Total estimado</div>
+        <div class="tv" id="nc-total">Gs. 0</div>
+        <div style="font-size:.72rem;opacity:.7;margin-top:4px" id="nc-detalle">Seleccioná vehículo y fechas</div>
+      </div>
+      <button class="btn-save" onclick="guardarContrato()">💾 Guardar Contrato</button>
+      <button class="btn-sec" onclick="go('contratos')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AGENDA ═══ -->
+<div class="screen" id="s-agenda">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">📅 Agenda & Reservas</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="mod-header mh-gest">
+      <h1>Agenda del 28/05/2026</h1>
+      <p>Devoluciones, reservas y mantenimientos</p>
+    </div>
+    <div class="list-box">
+      <div class="sec-title" style="margin-bottom:10px">HOY — 28/05/2026</div>
+      <div class="agenda-item">
+        <div class="agenda-ic li-re">📅</div>
+        <div class="agenda-body">
+          <div class="ab-title">Devolución — Hyundai Tucson</div>
+          <div class="ab-sub">Carlos Garay · CONT-004 · Chapa ABC 123<br>Km salida: 45.600 · Verificar km entrada y combustible</div>
+        </div>
+        <div class="agenda-date"><div class="ad-day">Hoy</div><div class="ad-label">28 may</div></div>
+      </div>
+      <div class="sec-title" style="margin-bottom:10px;margin-top:16px">PRÓXIMOS</div>
+      <div class="agenda-item">
+        <div class="agenda-ic li-pu">📋</div>
+        <div class="agenda-body">
+          <div class="ab-title">Entrega — Chevrolet Onix (Reserva)</div>
+          <div class="ab-sub">Diana Villalba · CONT-005 · Chapa MNO 345<br>3 días · Gs. 420.000 · Pago al retirar</div>
+        </div>
+        <div class="agenda-date"><div class="ad-day">26</div><div class="ad-label">may</div></div>
+      </div>
+      <div class="agenda-item">
+        <div class="agenda-ic li-or">🔧</div>
+        <div class="agenda-body">
+          <div class="ab-title">Mantenimiento en curso — Ford Ranger</div>
+          <div class="ab-sub">Chapa JKL 012 · Revisión frenos y suspensión<br>Ingresó 22/05 · Sin fecha de salida confirmada</div>
+        </div>
+        <div class="agenda-date"><div class="ad-day">⚠</div><div class="ad-label">taller</div></div>
+      </div>
+      <div class="sec-title" style="margin-bottom:10px;margin-top:16px">PRÓXIMOS MANTENIMIENTOS</div>
+      <div class="agenda-item">
+        <div class="agenda-ic li-az">🔔</div>
+        <div class="agenda-body">
+          <div class="ab-title">Toyota Corolla — Service próximo</div>
+          <div class="ab-sub">Chapa DEF 456 · Km actual: 68.200 · Próximo service: 70.000 km<br>Quedan ~1.800 km estimados</div>
+        </div>
+        <div class="agenda-date"><div class="ad-day">~</div><div class="ad-label">pronto</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INFORMES ═══ -->
+<div class="screen" id="s-informes">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">📊 Informes</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div class="mod-header mh-gest">
+      <h1>Informes — Mayo 2026</h1>
+      <p>Rentabilidad y ocupación de flota</p>
+    </div>
+    <div style="padding:14px 16px 90px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div class="kpi k1" style="margin:0"><div class="kpi-lbl">Ingresos mayo</div><div class="kpi-num" style="font-size:1.1rem">Gs. 3,64M</div><div class="kpi-desc">4 contratos</div></div>
+        <div class="kpi k2" style="margin:0"><div class="kpi-lbl">Ocupación flota</div><div class="kpi-num">65%</div><div class="kpi-desc">Promedio mensual</div></div>
+        <div class="kpi k3" style="margin:0"><div class="kpi-lbl">Vehículo top</div><div class="kpi-num" style="font-size:1rem">Hilux</div><div class="kpi-desc">Gs. 1.400.000</div></div>
+        <div class="kpi k4" style="margin:0"><div class="kpi-lbl">Días en taller</div><div class="kpi-num">6</div><div class="kpi-desc">Ford Ranger (mayo)</div></div>
+      </div>
+      <div class="det-card">
+        <h3>Rentabilidad por vehículo — Mayo 2026</h3>
+        <div class="drow"><span class="dlbl">🚙 Toyota Hilux</span><span class="dval" style="color:var(--az)">Gs. 1.400.000</span></div>
+        <div class="drow"><span class="dlbl">🚗 Hyundai Tucson</span><span class="dval" style="color:var(--az)">Gs. 1.120.000</span></div>
+        <div class="drow"><span class="dlbl">🚗 Toyota Corolla</span><span class="dval" style="color:var(--az)">Gs. 720.000</span></div>
+        <div class="drow"><span class="dlbl">🚗 Chevrolet Onix</span><span class="dval" style="color:var(--purp)">Gs. 420.000 (reserva)</span></div>
+        <div class="drow"><span class="dlbl">🛻 Ford Ranger</span><span class="dval" style="color:#e65100">Gs. 0 (mantenimiento)</span></div>
+        <div class="drow" style="border-top:2px solid var(--az);margin-top:4px;padding-top:12px;">
+          <span style="font-weight:800">TOTAL</span>
+          <span style="font-weight:900;color:var(--az);font-size:1rem">Gs. 3.640.000</span>
+        </div>
+      </div>
+      <div class="det-card">
+        <h3>Días alquilados por vehículo</h3>
+        <div class="drow"><span class="dlbl">Toyota Hilux</span><span class="dval">4 días</span></div>
+        <div class="drow"><span class="dlbl">Hyundai Tucson</span><span class="dval">4 días (activo)</span></div>
+        <div class="drow"><span class="dlbl">Toyota Corolla</span><span class="dval">4 días</span></div>
+        <div class="drow"><span class="dlbl">Chevrolet Onix</span><span class="dval">3 + 3 días</span></div>
+        <div class="drow"><span class="dlbl">Ford Ranger</span><span class="dval">0 días (taller)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GESTIÓN ═══ -->
+<div class="screen" id="s-gestion">
+  <div class="topbar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="ttitle">💰 Gestión & Cobros</span>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:16px 16px 90px;">
+    <div class="det-card">
+      <h3>Libro de ingresos — Mayo 2026</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Contrato</th><th>Cliente</th><th>Vehículo</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>CONT-005</td><td>D. Villalba</td><td>Onix</td><td>Gs. 420.000</td><td><span class="li-st st-res">Reserva</span></td></tr>
+            <tr><td>CONT-004</td><td>C. Garay</td><td>Tucson</td><td>Gs. 1.120.000</td><td><span class="li-st st-act">Activo</span></td></tr>
+            <tr><td>CONT-003</td><td>R. Acosta</td><td>Corolla</td><td>Gs. 720.000</td><td><span class="li-st st-cob">Cobrado</span></td></tr>
+            <tr><td>CONT-002</td><td>L. Fernández</td><td>Hilux</td><td>Gs. 1.400.000</td><td><span class="li-st st-cob">Cobrado</span></td></tr>
+            <tr><td>CONT-001</td><td>C. Garay</td><td>Onix</td><td>Gs. 420.000</td><td><span class="li-st st-cob">Cobrado</span></td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="tr-total"><td colspan="3">TOTAL MAYO</td><td colspan="2">Gs. 4.080.000</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="det-card" style="margin:0;text-align:center">
+        <div style="font-size:.67rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Cobrado</div>
+        <div style="font-size:1.4rem;font-weight:900;color:#2e7d32">Gs. 2.540.000</div>
+        <div style="font-size:.72rem;color:var(--sub);margin-top:4px">3 contratos cerrados</div>
+      </div>
+      <div class="det-card" style="margin:0;text-align:center">
+        <div style="font-size:.67rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Pendiente</div>
+        <div style="font-size:1.4rem;font-weight:900;color:#e65100">Gs. 1.540.000</div>
+        <div style="font-size:.72rem;color:var(--sub);margin-top:4px">1 activo + 1 reserva</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #content -->
+</div><!-- end #app -->
+
+<script>
+// ─── DATA ───────────────────────────────────
+const vehiculos = [
+  {id:1,marca:'Hyundai',modelo:'Tucson',año:2021,chapa:'ABC 123',color:'Gris Perla',cat:'SUV',precio:280000,estado:'alquilado',km:45800,cli_id:1,dev:'28/05/2026',
+   mant:[{fecha:'10/03/2026',tipo:'Cambio de aceite y filtros',km:43000},{fecha:'15/09/2025',tipo:'Service 40.000 km',km:40000}]},
+  {id:2,marca:'Toyota',modelo:'Corolla',año:2020,chapa:'DEF 456',color:'Blanco',cat:'Sedán',precio:180000,estado:'disponible',km:68200,cli_id:null,dev:null,
+   mant:[{fecha:'20/04/2026',tipo:'Cambio de aceite + filtros',km:66000}]},
+  {id:3,marca:'Toyota',modelo:'Hilux',año:2022,chapa:'GHI 789',color:'Blanco',cat:'Pickup 4x4',precio:350000,estado:'disponible',km:32100,cli_id:null,dev:null,
+   mant:[{fecha:'05/02/2026',tipo:'Service 30.000 km',km:30000}]},
+  {id:4,marca:'Ford',modelo:'Ranger',año:2023,chapa:'JKL 012',color:'Azul',cat:'Pickup 4x4',precio:400000,estado:'mantenimiento',km:18500,cli_id:null,dev:null,
+   mant:[{fecha:'22/05/2026',tipo:'Revisión frenos y suspensión',km:18500}]},
+  {id:5,marca:'Chevrolet',modelo:'Onix',año:2022,chapa:'MNO 345',color:'Rojo',cat:'Compacto',precio:140000,estado:'reservado',km:22300,cli_id:4,dev:'26/05/2026',
+   mant:[{fecha:'10/01/2026',tipo:'Cambio de aceite',km:20000}]},
+];
+
+const clientes = [
+  {id:1,nombre:'Carlos Garay',tel:'+595981345678',ci:'3.456.789',lic:'B1',
+   hist:[{id:'CONT-004',v:'Hyundai Tucson',desde:'24/05/2026',hasta:'28/05/2026',dias:4,total:1120000,estado:'activo'},
+         {id:'CONT-001',v:'Chevrolet Onix',desde:'01/04/2026',hasta:'04/04/2026',dias:3,total:420000,estado:'cobrado'}]},
+  {id:2,nombre:'Laura Fernández',tel:'+595982456789',ci:'4.567.890',lic:'B1',
+   hist:[{id:'CONT-002',v:'Toyota Hilux',desde:'10/05/2026',hasta:'14/05/2026',dias:4,total:1400000,estado:'cobrado'}]},
+  {id:3,nombre:'Roberto Acosta',tel:'+595983567890',ci:'5.678.901',lic:'B2',
+   hist:[{id:'CONT-003',v:'Toyota Corolla',desde:'18/05/2026',hasta:'22/05/2026',dias:4,total:720000,estado:'cobrado'},
+         {id:'CONT-000',v:'Toyota Corolla',desde:'15/03/2026',hasta:'17/03/2026',dias:2,total:360000,estado:'cobrado'}]},
+  {id:4,nombre:'Diana Villalba',tel:'+595984678901',ci:'6.789.012',lic:'B1',
+   hist:[{id:'CONT-005',v:'Chevrolet Onix',desde:'26/05/2026',hasta:'29/05/2026',dias:3,total:420000,estado:'reserva'}]},
+];
+
+const contratos = [
+  {id:'CONT-005',cid:4,vid:5,desde:'26/05/2026',hasta:'29/05/2026',dias:3,precio:140000,total:420000,km_s:22300,km_e:null,obs:'Pago al retirar el vehículo',estado:'reserva'},
+  {id:'CONT-004',cid:1,vid:1,desde:'24/05/2026',hasta:'28/05/2026',dias:4,precio:280000,total:1120000,km_s:45600,km_e:null,obs:'',estado:'activo'},
+  {id:'CONT-003',cid:3,vid:2,desde:'18/05/2026',hasta:'22/05/2026',dias:4,precio:180000,total:720000,km_s:67500,km_e:68200,obs:'',estado:'cobrado'},
+  {id:'CONT-002',cid:2,vid:3,desde:'10/05/2026',hasta:'14/05/2026',dias:4,precio:350000,total:1400000,km_s:31800,km_e:32100,obs:'',estado:'cobrado'},
+  {id:'CONT-001',cid:1,vid:5,desde:'01/04/2026',hasta:'04/04/2026',dias:3,precio:140000,total:420000,km_s:21800,km_e:22300,obs:'',estado:'cobrado'},
+];
+
+const stLabel = {activo:'Activo',reserva:'Reserva',cobrado:'Cobrado',pendiente:'Pendiente'};
+const stClass = {activo:'st-act',reserva:'st-res',cobrado:'st-cob',pendiente:'st-pend'};
+const vEstLabel = {disponible:'Disponible',alquilado:'En Alquiler',mantenimiento:'Mantenimiento',reservado:'Reservado'};
+const vEstClass = {disponible:'st-disp',alquilado:'st-alq',mantenimiento:'st-mant',reservado:'st-res'};
+const vIcon = {disponible:'li-gr',alquilado:'li-az',mantenimiento:'li-or',reservado:'li-pu'};
+
+// ─── NAVIGATION ─────────────────────────────
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById('s-'+id);
+  if(el){ el.classList.add('active'); window.scrollTo(0,0); }
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('act'));
+  const sb = document.querySelector(`.sb-item[onclick="go('${id}')"]`);
+  if(sb) sb.classList.add('act');
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('act'));
+  const bn = document.querySelector(`.bn[onclick="go('${id}')"]`);
+  if(bn) bn.classList.add('act');
+  if(id==='nuevo') initNuevo();
+}
+
+// ─── FLOTA ──────────────────────────────────
+function renderFlota(){
+  document.getElementById('lista-flota').innerHTML = vehiculos.map(v=>`
+    <div class="li" onclick="verVehiculo(${v.id})">
+      <div class="li-ic ${vIcon[v.estado]}">🚗</div>
+      <div class="li-inf">
+        <div class="lt">${v.marca} ${v.modelo} ${v.año}</div>
+        <div class="ls">${v.cat} · ${v.color} · Gs. ${v.precio.toLocaleString()}/día</div>
+        <div class="ls">Km: ${v.km.toLocaleString()}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <span class="chapa">${v.chapa}</span>
+        <span class="li-st ${vEstClass[v.estado]}">${vEstLabel[v.estado]}</span>
+      </div>
+    </div>`).join('');
+}
+
+function verVehiculo(id){
+  const v = vehiculos.find(x=>x.id===id);
+  const cli = v.cli_id ? clientes.find(x=>x.id===v.cli_id) : null;
+  const mant = v.mant.map(m=>`
+    <div class="drow"><span class="dlbl">📅 ${m.fecha}</span><span class="dval">${m.tipo} · ${m.km.toLocaleString()} km</span></div>`).join('');
+  document.getElementById('det-vehiculo').innerHTML = `
+    <div class="mod-header mh-flota">
+      <h1>${v.marca} ${v.modelo} ${v.año}</h1>
+      <p>${v.cat} · ${v.color}</p>
+      <div class="stat-strip">
+        <div class="stat-p"><div class="sv" style="font-size:1rem">${v.chapa}</div><div class="sl">Chapa</div></div>
+        <div class="stat-p"><div class="sv" style="font-size:.9rem">Gs. ${v.precio.toLocaleString()}</div><div class="sl">Por día</div></div>
+        <div class="stat-p"><div class="sv" style="font-size:.9rem">${v.km.toLocaleString()}</div><div class="sl">Km actuales</div></div>
+      </div>
+    </div>
+    <div class="det-wrap">
+      <div class="det-card">
+        <h3>Información del vehículo</h3>
+        <div class="drow"><span class="dlbl">Estado</span><span class="dval"><span class="li-st ${vEstClass[v.estado]}">${vEstLabel[v.estado]}</span></span></div>
+        <div class="drow"><span class="dlbl">Categoría</span><span class="dval">${v.cat}</span></div>
+        <div class="drow"><span class="dlbl">Color</span><span class="dval">${v.color}</span></div>
+        <div class="drow"><span class="dlbl">Precio por día</span><span class="dval" style="color:var(--az);font-weight:800">Gs. ${v.precio.toLocaleString()}</span></div>
+        ${cli ? `<div class="drow"><span class="dlbl">Cliente actual</span><span class="dval">${cli.nombre}</span></div>
+        <div class="drow"><span class="dlbl">Devolución</span><span class="dval" style="color:#c62828;font-weight:800">${v.dev}</span></div>` : ''}
+      </div>
+      <div class="det-card">
+        <h3>Historial de mantenimiento</h3>
+        ${mant}
+      </div>
+    </div>`;
+  go('vehiculo');
+}
+
+// ─── CLIENTES ───────────────────────────────
+function renderClientes(){
+  document.getElementById('lista-clientes').innerHTML = clientes.map(c=>{
+    const total = c.hist.reduce((s,h)=>s+h.total,0);
+    return `
+      <div class="li" onclick="verCliente(${c.id})">
+        <div class="li-ic li-az">👤</div>
+        <div class="li-inf">
+          <div class="lt">${c.nombre}</div>
+          <div class="ls">CI: ${c.ci} · Lic: ${c.lic}</div>
+          <div class="ls">📞 ${c.tel} · ${c.hist.length} contrato${c.hist.length!==1?'s':''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0"><div style="font-size:.75rem;font-weight:800;color:var(--az)">Gs. ${total.toLocaleString()}</div><div style="font-size:.65rem;color:var(--sub)">historial</div></div>
+      </div>`;
+  }).join('');
+}
+
+function verCliente(id){
+  const c = clientes.find(x=>x.id===id);
+  const total = c.hist.reduce((s,h)=>s+h.total,0);
+  const hist = c.hist.map(h=>`
+    <div class="drow">
+      <div><div style="font-size:.85rem;font-weight:700">${h.id} · ${h.v}</div><div style="font-size:.7rem;color:var(--sub)">${h.desde} → ${h.hasta} · ${h.dias} días</div></div>
+      <div style="text-align:right"><div style="font-weight:800;color:var(--az)">Gs. ${h.total.toLocaleString()}</div><span class="li-st ${stClass[h.estado]}">${stLabel[h.estado]}</span></div>
+    </div>`).join('');
+  document.getElementById('det-cliente').innerHTML = `
+    <div class="mod-header mh-green">
+      <h1>${c.nombre}</h1>
+      <p>CI: ${c.ci} · Licencia: ${c.lic}</p>
+      <div class="stat-strip">
+        <div class="stat-p"><div class="sv">${c.hist.length}</div><div class="sl">Contratos</div></div>
+        <div class="stat-p"><div class="sv" style="font-size:.85rem">Gs. ${(total/1000000).toFixed(1)}M</div><div class="sl">Total</div></div>
+      </div>
+    </div>
+    <div class="det-wrap">
+      <div class="det-card">
+        <h3>Datos personales</h3>
+        <div class="drow"><span class="dlbl">Teléfono</span><span class="dval">${c.tel}</span></div>
+        <div class="drow"><span class="dlbl">C.I.</span><span class="dval">${c.ci}</span></div>
+        <div class="drow"><span class="dlbl">Licencia</span><span class="dval">${c.lic}</span></div>
+      </div>
+      <div class="det-card">
+        <h3>Historial de alquileres</h3>
+        ${hist}
+        <div style="text-align:right;margin-top:12px;padding-top:10px;border-top:2px solid var(--az);font-size:.82rem;color:var(--sub)">
+          Total histórico: <strong style="color:var(--az);font-size:.95rem">Gs. ${total.toLocaleString()}</strong>
+        </div>
+      </div>
+      <a href="https://wa.me/${c.tel.replace(/\D/g,'')}" target="_blank" style="display:block;width:100%;padding:14px;background:#25D366;color:#fff;text-align:center;border-radius:20px;font-weight:800;font-size:.95rem;text-decoration:none;">📲 WhatsApp a ${c.nombre.split(' ')[0]}</a>
+    </div>`;
+  go('cliente');
+}
+
+// ─── CONTRATOS ──────────────────────────────
+function renderContratos(){
+  document.getElementById('lista-contratos').innerHTML = contratos.map(c=>{
+    const cli = clientes.find(x=>x.id===c.cid);
+    const veh = vehiculos.find(x=>x.id===c.vid);
+    return `
+      <div class="li" onclick="verContrato('${c.id}')">
+        <div class="li-ic ${c.estado==='cobrado'?'li-gr':c.estado==='activo'?'li-az':c.estado==='reserva'?'li-pu':'li-or'}">📋</div>
+        <div class="li-inf">
+          <div class="lt">${c.id} · ${cli.nombre.split(' ')[0]}</div>
+          <div class="ls">🚗 ${veh.marca} ${veh.modelo} <span class="chapa" style="font-size:.65rem">${veh.chapa}</span></div>
+          <div class="ls">📅 ${c.desde} → ${c.hasta} · ${c.dias} días</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span style="font-size:.82rem;font-weight:800;color:var(--az)">Gs. ${c.total.toLocaleString()}</span>
+          <span class="li-st ${stClass[c.estado]}">${stLabel[c.estado]}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function verContrato(id){
+  const c = contratos.find(x=>x.id===id);
+  const cli = clientes.find(x=>x.id===c.cid);
+  const veh = vehiculos.find(x=>x.id===c.vid);
+  const waText = encodeURIComponent(
+    `*CONTRATO ${c.id}*\nIsabSoft · Alquiler de Vehículos\n\n` +
+    `Cliente: ${cli.nombre}\nCI: ${cli.ci}\n` +
+    `Vehículo: ${veh.marca} ${veh.modelo} ${veh.año}\nChapa: ${veh.chapa}\n\n` +
+    `Salida: ${c.desde}\nDevolución: ${c.hasta}\nDías: ${c.dias}\n` +
+    `Precio/día: Gs. ${c.precio.toLocaleString()}\n\n` +
+    `*TOTAL: Gs. ${c.total.toLocaleString()}*` +
+    (c.obs ? `\n\n📌 ${c.obs}` : '') +
+    `\n\nGracias por confiar en IsabSoft 🚗`
+  );
+  document.getElementById('det-contrato').innerHTML = `
+    <div class="cont-doc">
+      <div class="cont-top">
+        <div class="ct-brand"><div class="cb-name">IsabSoft</div><div class="cb-sub">Alquiler de Vehículos</div></div>
+        <div class="ct-meta"><strong>${c.id}</strong><br>${c.desde}<br><span class="li-st ${stClass[c.estado]}">${stLabel[c.estado]}</span></div>
+      </div>
+      <div class="cont-veh">
+        <div class="cv-icon">🚗</div>
+        <div class="cv-info">
+          <div class="cv-name">${veh.marca} ${veh.modelo} ${veh.año}</div>
+          <div class="cv-sub"><span class="chapa">${veh.chapa}</span> · ${veh.cat} · ${veh.color}</div>
+        </div>
+      </div>
+      <div class="det-card" style="margin-bottom:14px">
+        <h3>Datos del contrato</h3>
+        <div class="drow"><span class="dlbl">Cliente</span><span class="dval">${cli.nombre}</span></div>
+        <div class="drow"><span class="dlbl">C.I.</span><span class="dval">${cli.ci}</span></div>
+        <div class="drow"><span class="dlbl">Licencia</span><span class="dval">${cli.lic}</span></div>
+        <div class="drow"><span class="dlbl">Fecha salida</span><span class="dval">${c.desde}</span></div>
+        <div class="drow"><span class="dlbl">Fecha devolución</span><span class="dval">${c.hasta}</span></div>
+        <div class="drow"><span class="dlbl">Días</span><span class="dval">${c.dias} días</span></div>
+        <div class="drow"><span class="dlbl">Precio por día</span><span class="dval">Gs. ${c.precio.toLocaleString()}</span></div>
+        <div class="drow"><span class="dlbl">Km salida</span><span class="dval">${c.km_s.toLocaleString()}</span></div>
+        <div class="drow"><span class="dlbl">Km entrada</span><span class="dval">${c.km_e ? c.km_e.toLocaleString() : '—'}</span></div>
+        ${c.obs ? `<div class="drow"><span class="dlbl">📌 Observación</span><span class="dval">${c.obs}</span></div>` : ''}
+        <div class="drow" style="border-top:2px solid var(--az);margin-top:4px;padding-top:12px"><span style="font-weight:800">TOTAL</span><span style="font-weight:900;color:var(--az);font-size:1.1rem">Gs. ${c.total.toLocaleString()}</span></div>
+      </div>
+      <div class="cont-wa">
+        <a href="https://wa.me/${cli.tel.replace(/\D/g,'')}?text=${waText}" target="_blank" class="btn-wa">📲 Enviar WA</a>
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+        <button class="btn-back" onclick="go('contratos')">← Volver</button>
+      </div>
+    </div>`;
+  go('contrato');
+}
+
+// ─── NUEVO CONTRATO ──────────────────────────
+function initNuevo(){
+  const selCli = document.getElementById('nc-cliente');
+  const selVeh = document.getElementById('nc-vehiculo');
+  selCli.innerHTML = '<option value="">Seleccionar cliente...</option>' +
+    clientes.map(c=>`<option value="${c.id}">${c.nombre} (CI: ${c.ci})</option>`).join('');
+  selVeh.innerHTML = '<option value="">Seleccionar vehículo...</option>' +
+    vehiculos.filter(v=>v.estado==='disponible').map(v=>`<option value="${v.id}">${v.marca} ${v.modelo} ${v.año} · ${v.chapa} · Gs. ${v.precio.toLocaleString()}/día</option>`).join('');
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('nc-desde').value = hoy;
+  document.getElementById('nc-hasta').value = '';
+  document.getElementById('nc-km').value = '';
+  document.getElementById('nc-obs').value = '';
+  actualizarTotal();
+}
+
+function actualizarTotal(){
+  const vid = parseInt(document.getElementById('nc-vehiculo').value);
+  const desde = document.getElementById('nc-desde').value;
+  const hasta = document.getElementById('nc-hasta').value;
+  if(!vid || !desde || !hasta){ document.getElementById('nc-total').textContent='Gs. 0'; document.getElementById('nc-detalle').textContent='Seleccioná vehículo y fechas'; return; }
+  const veh = vehiculos.find(x=>x.id===vid);
+  const d1 = new Date(desde), d2 = new Date(hasta);
+  const dias = Math.round((d2-d1)/(1000*60*60*24));
+  if(dias<=0){ document.getElementById('nc-total').textContent='Gs. 0'; document.getElementById('nc-detalle').textContent='La devolución debe ser posterior a la salida'; return; }
+  const total = dias * veh.precio;
+  document.getElementById('nc-total').textContent = 'Gs. ' + total.toLocaleString();
+  document.getElementById('nc-detalle').textContent = `${dias} día${dias!==1?'s':''} × Gs. ${veh.precio.toLocaleString()}/día`;
+}
+
+function guardarContrato(){
+  const cid = document.getElementById('nc-cliente').value;
+  const vid = document.getElementById('nc-vehiculo').value;
+  const desde = document.getElementById('nc-desde').value;
+  const hasta = document.getElementById('nc-hasta').value;
+  if(!cid || !vid || !desde || !hasta){ alert('Completá todos los campos.'); return; }
+  const d1 = new Date(desde), d2 = new Date(hasta);
+  const dias = Math.round((d2-d1)/(1000*60*60*24));
+  if(dias<=0){ alert('La fecha de devolución debe ser posterior a la de salida.'); return; }
+  const veh = vehiculos.find(x=>x.id===parseInt(vid));
+  const total = dias * veh.precio;
+  const newId = 'CONT-' + String(contratos.length + 100).padStart(3,'0');
+  const dsde = desde.split('-').reverse().join('/');
+  const hsta = hasta.split('-').reverse().join('/');
+  contratos.unshift({id:newId,cid:parseInt(cid),vid:parseInt(vid),desde:dsde,hasta:hsta,dias,precio:veh.precio,total,km_s:parseInt(document.getElementById('nc-km').value)||veh.km,km_e:null,obs:document.getElementById('nc-obs').value,estado:'reserva'});
+  veh.estado = 'reservado';
+  renderContratos();
+  renderFlota();
+  alert('✅ Contrato ' + newId + ' guardado.');
+  go('contratos');
+}
+
+// ─── INIT ────────────────────────────────────
+renderFlota();
+renderClientes();
+renderContratos();
+</script>
+</body>
+</html>
